@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { store } from "../store";
+import { store } from "../store/store";
 
 
 axios.defaults.baseURL=process.env.REACT_APP_API_URL;
