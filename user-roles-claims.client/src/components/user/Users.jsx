@@ -1,41 +1,42 @@
 import { useEffect, useState } from "react"
 import agent from "../../api/agent"
 import { useDispatch } from "react-redux"
-import { addPage, setPageList } from "./pageSlice"
 import { toast } from "react-toastify"
+import { setUser, setUserList } from "./userSlice"
 
-export default function PageList() {
-    const [pages, setPages] = useState([])
-    const [formData, setFormData] = useState({Id: 0, Name: "", Description: "" })
+export default function Users() {
+    const [users, setUsers] = useState([])
+    const [formData, setFormData] = useState({id: 0, email: "", status: "" })
     const dispatch = useDispatch();
 
-    const getPages = async () => {
-        await agent.Pages.get().then((res) => {
+    const getData = async () => {
+        await agent.User.get().then((res) => {
             if (res.status === 200) {
-                setPages(res.data)
-                dispatch(setPageList(res.data))
+                setUsers(res.data)
+                dispatch(setUserList(res.data))
             }
         })
     }
 
     useEffect(() => {
-        getPages();
+        getData();
     }, [])
 
 
-    const submitPage = async (e) => {
+    const submitRole = async (e) => {
         e.preventDefault();
-        if (formData.Name === "" && formData.Description === "") {
-            toast.warn("Page name and description is required!");
+        console.log('oooops', formData)
+        if (formData.email === "" && formData.status === "") {
+            toast.warn("user email and status is required!");
         }
-        if(formData.Id===0){
-            await agent.Pages.post(formData).then((res) => {
+        if(formData.id===0){
+            await agent.User.postRegister(formData).then((res) => {
                 if (res.status === 201) {
-                    dispatch(addPage(res.data));
-                    getPages();
-                    toast.success("Page saved successfully!");
+                    dispatch(setUser(res.data));
+                    getData();
+                    toast.success("User saved successfully!");
                 } else {
-                    toast.error("error saving page, try again.");
+                    toast.error("error saving data, try again.");
                 }
                 document.getElementById("Close").click();
             })
@@ -57,28 +58,28 @@ export default function PageList() {
             <div className="row">
                 <div className="col-sm-10">
                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        Create Page
+                        Create User
                     </button>
                     <table className="table">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Page Name</th>
-                                <th scope="col">Description</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {pages.map((x, i) => (
+                            {users.map((x, i) => (
                                 <tr key={i}>
                                     <td>{x.id}</td>
-                                    <td>{x.name}</td>
-                                    <td>{x.description}</td>
+                                    <td>{x.email}</td>
+                                    <td>{x.status === true ? 'Active' : 'Disable'}</td>
                                     <td>
                                         <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={()=>{
                                             setFormData({
-                                                Id:x.id,
-                                                Name: x.name,
-                                                Description: x.description
+                                                id:x.id,
+                                                email: x.email,
+                                                status: x.status
                                             })
                                         }}>
                                             Edit
@@ -101,7 +102,7 @@ export default function PageList() {
                 aria-hidden="true"
             >
                 <div className="modal-dialog">
-                    <form onSubmit={submitPage}>
+                    <form onSubmit={submitRole}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="staticBackdropLabel">
@@ -118,27 +119,26 @@ export default function PageList() {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor="pageName" className="form-label">
-                                        Page name
+                                        Email
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        id="Name"
+                                        id="email"
                                         onChange={onEdit}
-                                        value={formData.Name}
+                                        value={formData.role}
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="Description" className="form-label">
-                                        Page description
+                                    <label htmlFor="status" className="form-label">
+                                        User Status
                                     </label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="Description"
-                                        onChange={onEdit}
-                                        value={formData.Description}
-                                    />
+                                    <select onChange={onEdit} value={formData.status} className="form-control"
+                                        id="status" >
+                                        <option value={''}>Select user status</option>
+                                        <option value={'true'}>Active</option>
+                                        <option value={'false'}>Disable</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="modal-footer">

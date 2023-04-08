@@ -2,9 +2,11 @@ const express= require('express');
 const app=express();
 
 const user= require('./users');
-const pagerole= require('./pageroles');
+const page= require('./pages');
+const role= require('./roles');
 
 app.use(user);
-app.use(pagerole);
+app.use(page);
+app.use(role);
 
 module.exports=app;

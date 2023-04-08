@@ -1,4 +1,26 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../user/userSlice";
+import { toast } from "react-toastify";
+
 export default function Header() {
+    const dispatch=useDispatch();
+    const [data, setData]=useState("");
+    const onEdit=(e)=>{
+        e.preventDefault();
+        setData({
+            ...data,
+            [e.target.id]: e.target.value
+        })
+
+    }
+    const submitLogin=(e)=>{
+        e.preventDefault();
+        if(data===""){
+            return toast.warn("invalid details");
+        }
+        dispatch(loginUser(data));
+    }
     return (
         <div>
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -20,57 +42,106 @@ export default function Header() {
                     <div className="collapse navbar-collapse" id="navbarNavDropdown">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" href="#">
+                                <a className="nav-link active" aria-current="page" href="/">
                                     Home
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">
-                                    Features
+                                <a className="nav-link" href="/users">
+                                    Users
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/users/roles">
+                                    Users Roles
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/roles">
+                                    Roles
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="/pages">
+                                    Pages
+                                </a>
+                            </li>
+
+
+                        </ul>
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
+                                <a className="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                    Login
                                 </a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="#">
-                                    Pricing
+                                    Logout
                                 </a>
-                            </li>
-                            <li className="nav-item dropdown">
-                                <a
-                                    className="nav-link dropdown-toggle"
-                                    href="#"
-                                    id="navbarDropdownMenuLink"
-                                    role="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                >
-                                    Dropdown link
-                                </a>
-                                <ul
-                                    className="dropdown-menu"
-                                    aria-labelledby="navbarDropdownMenuLink"
-                                >
-                                    <li>
-                                        <a className="dropdown-item" href="#">
-                                            Action
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a className="dropdown-item" href="#">
-                                            Another action
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a className="dropdown-item" href="#">
-                                            Something else here
-                                        </a>
-                                    </li>
-                                </ul>
                             </li>
                         </ul>
                     </div>
                 </div>
             </nav>
 
+            <div
+                className="modal fade"
+                id="loginModal"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                tabIndex={-1}
+                aria-labelledby="staticBackdropLabel"
+                aria-hidden="true"
+            >
+                <div className="modal-dialog">
+                    <form onSubmit={submitLogin}>
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="staticBackdropLabel">
+                                    Login
+                                </h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"
+                                    id="Close"
+                                />
+                            </div>
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <label htmlFor="pageName" className="form-label">
+                                        Email
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="email"
+                                        onChange={onEdit}
+                                        value={data}
+                                    />
+                                </div>
+                               
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Login
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
+        
     )
 }

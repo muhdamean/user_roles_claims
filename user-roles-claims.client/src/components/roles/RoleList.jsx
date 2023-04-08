@@ -1,41 +1,41 @@
 import { useEffect, useState } from "react"
 import agent from "../../api/agent"
-import { useDispatch } from "react-redux"
-import { addPage, setPageList } from "./pageSlice"
+import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
+import { addRole, setRoleList } from "./roleSlice"
 
-export default function PageList() {
-    const [pages, setPages] = useState([])
-    const [formData, setFormData] = useState({Id: 0, Name: "", Description: "" })
+export default function RoleList() {
+    const [roles, setRoles] = useState([])
+    const [formData, setFormData] = useState({id: 0, role: "", status: "" })
     const dispatch = useDispatch();
-
-    const getPages = async () => {
-        await agent.Pages.get().then((res) => {
+console.log('roles here....',useSelector(state=>state.roles.roles))
+    const getData = async () => {
+        await agent.Roles.get().then((res) => {
             if (res.status === 200) {
-                setPages(res.data)
-                dispatch(setPageList(res.data))
+                setRoles(res.data)
+                dispatch(setRoleList(res.data))
             }
         })
     }
 
     useEffect(() => {
-        getPages();
+        getData();
     }, [])
 
 
-    const submitPage = async (e) => {
+    const submitRole = async (e) => {
         e.preventDefault();
-        if (formData.Name === "" && formData.Description === "") {
-            toast.warn("Page name and description is required!");
+        if (formData.role === "" && formData.status === "") {
+            toast.warn("role name and status is required!");
         }
-        if(formData.Id===0){
-            await agent.Pages.post(formData).then((res) => {
+        if(formData.id===0){
+            await agent.Roles.post(formData).then((res) => {
                 if (res.status === 201) {
-                    dispatch(addPage(res.data));
-                    getPages();
-                    toast.success("Page saved successfully!");
+                    dispatch(addRole(res.data));
+                    getData();
+                    toast.success("Role saved successfully!");
                 } else {
-                    toast.error("error saving page, try again.");
+                    toast.error("error saving data, try again.");
                 }
                 document.getElementById("Close").click();
             })
@@ -57,28 +57,28 @@ export default function PageList() {
             <div className="row">
                 <div className="col-sm-10">
                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        Create Page
+                        Create Role
                     </button>
                     <table className="table">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Page Name</th>
-                                <th scope="col">Description</th>
+                                <th scope="col">Role Name</th>
+                                <th scope="col">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {pages.map((x, i) => (
+                            {roles.map((x, i) => (
                                 <tr key={i}>
                                     <td>{x.id}</td>
-                                    <td>{x.name}</td>
-                                    <td>{x.description}</td>
+                                    <td>{x.role}</td>
+                                    <td>{x.status === true ? 'Active' : 'Disable'}</td>
                                     <td>
                                         <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={()=>{
                                             setFormData({
-                                                Id:x.id,
-                                                Name: x.name,
-                                                Description: x.description
+                                                id:x.id,
+                                                role: x.role,
+                                                status: x.status
                                             })
                                         }}>
                                             Edit
@@ -101,7 +101,7 @@ export default function PageList() {
                 aria-hidden="true"
             >
                 <div className="modal-dialog">
-                    <form onSubmit={submitPage}>
+                    <form onSubmit={submitRole}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="staticBackdropLabel">
@@ -118,27 +118,26 @@ export default function PageList() {
                             <div className="modal-body">
                                 <div className="mb-3">
                                     <label htmlFor="pageName" className="form-label">
-                                        Page name
+                                        Role name
                                     </label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        id="Name"
+                                        id="role"
                                         onChange={onEdit}
-                                        value={formData.Name}
+                                        value={formData.role}
                                     />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="Description" className="form-label">
-                                        Page description
+                                        Role Status
                                     </label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="Description"
-                                        onChange={onEdit}
-                                        value={formData.Description}
-                                    />
+                                    <select onChange={onEdit} value={formData.status} className="form-control"
+                                        id="status" >
+                                        <option value={''}>Select role status</option>
+                                        <option value={'true'}>Active</option>
+                                        <option value={'false'}>Disable</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="modal-footer">

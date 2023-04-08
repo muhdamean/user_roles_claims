@@ -1,16 +1,13 @@
 import axios from "axios";
-import { toast } from "react-toastify";
-import { store } from "../store/store";
-
 
 axios.defaults.baseURL=process.env.REACT_APP_API_URL;
-axios.defaults.withCredentials=true;
+// axios.defaults.withCredentials=true;
 
-axios.interceptors.request.use(config=>{
-    const token=store.getState().account.user?.accessToken;
-    if(token) config.headers.Authorization=`Bearer ${token}`;
-    return config;
-})
+// axios.interceptors.request.use(config=>{
+//     const token=store.getState().account.user?.accessToken;
+//     if(token) config.headers.Authorization=`Bearer ${token}`;
+//     return config;
+// })
 
 const requests={
     get:(url)=>axios.get(url),
@@ -20,9 +17,9 @@ const requests={
 }
 
 const User={
-    get:()=>requests.get('user/login'),
-    postLogin:(body)=>requests.post(`user/login`, body),
-    postRegister:(body)=>requests.post(`user/register`, body)
+    get:()=>requests.get('users'),
+    post:(body)=>requests.post(`users/login`, body),
+    postRegister:(body)=>requests.post(`users/register`, body)
 }
 
 const Pages={
@@ -32,7 +29,10 @@ const Pages={
 
 const Roles={
     get:()=>requests.get('roles'),
-    post:(body)=>axios.post(`roles`,body)
+    getUsersRoles:()=>requests.get('roles/users'),
+    getUserRolesByEmail:(email)=>requests.get(`roles/user/${email}`),
+    post:(body)=>axios.post(`roles`,body),
+    postAddUserToRole:(body)=>axios.post(`roles/add`, body)
 }
 
 const agent={
