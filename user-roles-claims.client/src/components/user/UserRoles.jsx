@@ -2,17 +2,18 @@ import { useEffect, useState } from "react"
 import agent from "../../api/agent"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
-import { selectAllUsers } from "./userSlice"
+import { currentUserRolesByPage, selectAllUsers } from "./userSlice"
 import { addRole, setRolesClaims } from "../roles/roleSlice"
 
 export default function UserRoles() {
     const dispatch = useDispatch();
     const [roleList, setRoleList] = useState([]);
-    const [userRoles, setUserRoles] = useState([]);
+    // const [userRoles, setUserRoles] = useState([]);
     const [formData, setFormData] = useState({ id: 0, email: "", role: "", page: "", create: "", update: "", delete: "" })
     const roles= useSelector((state) => state.roles.roles);
     const users = useSelector(selectAllUsers);
     const pages = useSelector((state) => state.pages.pages);
+    const pagerole= useSelector(state=>currentUserRolesByPage(state,window.location.pathname))
 
     const getData = async () => {
         await agent.Roles.getUsersRoles().then((res) => {
@@ -22,24 +23,24 @@ export default function UserRoles() {
             }
         })
     }
-
-    const getUserRoles = async (email) => {
-        await agent.Roles.getUserRolesByEmail(email).then((res) => {
-            if (res.status === 200) {
-                if (res.data?.length > 0) {
-                    let rows = [];
-                    res.data.map((x, i) => {
-                        return rows.push(
-                            x.role
-                        );
-                    })
-                    setUserRoles(rows)
-                }
-            }else{
-                setUserRoles([]);
-            }
-        })
-    }
+    
+    // const getUserRoles = async (email) => {
+    //     await agent.Roles.getUserRolesByEmail(email).then((res) => {
+    //         if (res.status === 200) {
+    //             if (res.data?.length > 0) {
+    //                 let rows = [];
+    //                 res.data.map((x, i) => {
+    //                     return rows.push(
+    //                         x.role
+    //                     );
+    //                 })
+    //                 setUserRoles(rows)
+    //             }
+    //         }else{
+    //             setUserRoles([]);
+    //         }
+    //     })
+    // }
 
     useEffect(() => {
         getData();
@@ -51,8 +52,7 @@ export default function UserRoles() {
         if (formData.email === "" || formData.page === "" || formData.role === "") {
             toast.warn("email, role and page are required!");
         }
-        if (formData.id === 0) {
-            console.log(formData)
+       // if (formData.id === 0) {
             await agent.Roles.postAddUserToRole(formData).then((res) => {
                 if (res.status === 201) {
                     dispatch(addRole(res.data));
@@ -63,10 +63,10 @@ export default function UserRoles() {
                 }
                 document.getElementById("Close").click();
             })
-        } else {
-            toast.success("update endpoint here...");
-            document.getElementById("Close").click();
-        }
+        // } else {
+        //     toast.success("update endpoint here...");
+        //     document.getElementById("Close").click();
+        // }
     }
 
     const onEdit = async (e) => {
@@ -75,19 +75,20 @@ export default function UserRoles() {
             ...formData,
             [e.target.id]: e.target.value
         })
-        if (e.target.id === "email") {
-            await getUserRoles(e.target.value);
-        }
+        // if (e.target.id === "email") {
+        //     await getUserRoles(e.target.value);
+        // }
     }
 
     return (
         <>
-            {console.log('list ', roleList)}
             <div className="row">
                 <div className="col-sm-10">
+                    {pagerole?.length>0 && pagerole[0]?.creates===true &&
                     <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         Create User
                     </button>
+                     } 
                     <table className="table">
                         <thead>
                             <tr>
@@ -108,9 +109,9 @@ export default function UserRoles() {
                                     <td>{x.email}</td>
                                     <td>{x.role}</td>
                                     <td>{x.page}</td>
-                                    <td>{x.create === true ? 'Yes' : 'No'}</td>
-                                    <td>{x.update === true ? 'Yes' : 'No'}</td>
-                                    <td>{x.delete === true ? 'Yes' : 'No'}</td>
+                                    <td>{x.creates === true ? 'Yes' : 'No'}</td>
+                                    <td>{x.updates === true ? 'Yes' : 'No'}</td>
+                                    <td>{x.deletes === true ? 'Yes' : 'No'}</td>
                                     <td>
                                         <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onClick={() => {
                                             setFormData({
@@ -177,11 +178,14 @@ export default function UserRoles() {
                                     <select onChange={onEdit} value={formData.role} className="form-control"
                                         id="role" >
                                         <option value={''}>Select role</option>
-                                        {roles.filter(x => !userRoles.includes(x.role)).map((x, i) => (
+                                        {roles.map((x, i) => (
                                             <option key={i} value={x.id}>{x.role}</option>
                                         ))}
-                                        {console.log(roles)}
+                                        {/* {roles.filter(x => !userRoles.includes(x.role)).map((x, i) => (
+                                            <option key={i} value={x.id}>{x.role}</option>
+                                        ))} */}
                                     </select>
+                                   
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="page" className="form-label">

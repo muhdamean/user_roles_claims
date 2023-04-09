@@ -6,13 +6,13 @@ import { toast } from "react-toastify";
 export default function Header() {
     const dispatch=useDispatch();
     const [data, setData]=useState("");
+
     const onEdit=(e)=>{
         e.preventDefault();
         setData({
             ...data,
             [e.target.id]: e.target.value
         })
-
     }
     const submitLogin=(e)=>{
         e.preventDefault();
@@ -20,6 +20,7 @@ export default function Header() {
             return toast.warn("invalid details");
         }
         dispatch(loginUser(data));
+        document.getElementById("Close").click();
     }
     return (
         <div>
@@ -66,7 +67,16 @@ export default function Header() {
                                     Pages
                                 </a>
                             </li>
-
+                            <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Demo Access
+                                </a>
+                                <ul className="dropdown-menu">
+                                    <li><a className="dropdown-item" href="/page1">Page1</a></li>
+                                    <li><a className="dropdown-item" href="/page2">Page2</a></li>
+                                    <li><a className="dropdown-item" href="/page3">Page3</a></li>
+                                </ul>
+                                </li>
 
                         </ul>
                         <ul className="navbar-nav ms-auto">
@@ -119,7 +129,6 @@ export default function Header() {
                                         className="form-control"
                                         id="email"
                                         onChange={onEdit}
-                                        value={data}
                                     />
                                 </div>
                                

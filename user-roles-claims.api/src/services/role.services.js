@@ -59,7 +59,6 @@ const getUsersRoles = async (req, res) => {
             res.status(400).send(error);
         }
         if (results.rows && results.rows.length > 0) {
-            console.log(results.rows, 'count', results.rowCount)
                 res.status(200).send(results.rows);
         }else{
             res.status(204).send({message: 'No record found'})
@@ -71,9 +70,9 @@ const addUserToRole =async (req, res) => {
 	let email = req.body?.email;
 	let role= Number.parseInt(req.body?.role);
     let page=Number.parseInt(req.body?.page);
-    let create= req.body.create?? null;
-    let update= req.body.update?? null;
-    let delet = req.body.delete ?? null;
+    let create= req.body.create?? false;
+    let update= req.body.update?? false;
+    let delet = req.body.delete ?? false;
 
 	pool.query(`select * from user_roles where email=$1 and role_id=$2 and page_id=$3`,
      [email, role, page], (error, results) => {

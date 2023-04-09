@@ -8,7 +8,6 @@ export default function RoleList() {
     const [roles, setRoles] = useState([])
     const [formData, setFormData] = useState({id: 0, role: "", status: "" })
     const dispatch = useDispatch();
-console.log('roles here....',useSelector(state=>state.roles.roles))
     const getData = async () => {
         await agent.Roles.get().then((res) => {
             if (res.status === 200) {

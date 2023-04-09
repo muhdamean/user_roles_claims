@@ -25,7 +25,6 @@ export default function Users() {
 
     const submitRole = async (e) => {
         e.preventDefault();
-        console.log('oooops', formData)
         if (formData.email === "" && formData.status === "") {
             toast.warn("user email and status is required!");
         }
